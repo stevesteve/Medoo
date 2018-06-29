@@ -37,6 +37,8 @@ class Medoo
 
 	protected $debug_mode = false;
 
+    protected $distinct_mode = false;
+
 	protected $guid = 0;
 
 	public function __construct($options = null)
@@ -1015,7 +1017,14 @@ class Medoo
 			$column = $this->columnPush($columns, $map);
 		}
 
-		return 'SELECT ' . $column . ' FROM ' . $table_query . $this->whereClause($where, $map);
+        if ($this->distinct_mode)
+        {
+            $distinct = 'DISTINCT ';
+        } else {
+            $distinct = '';
+        }
+
+		return 'SELECT ' . $distinct . $column . ' FROM ' . $table_query . $this->whereClause($where, $map);
 	}
 
 	protected function columnMap($columns, &$stack)
@@ -1509,6 +1518,12 @@ class Medoo
 
 		return $this;
 	}
+
+    public function distinct()
+    {
+        $this->distinct_mode = true;
+        return $this;
+    }
 
 	public function error()
 	{
